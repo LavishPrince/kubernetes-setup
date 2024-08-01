@@ -1,0 +1,13 @@
+---
+- name: Setup Kubernetes in Virtual Machine
+  hosts: localhost
+  become: true
+  pre_tasks:
+    - name: Update Cache
+      apt:
+        update_cache: true
+      tags:
+        - k8
+
+  tasks:
+    # - include_tasks: ./tasks/basic-tools.yaml
