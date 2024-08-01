@@ -122,4 +122,5 @@
 #     group: root
 
 - name: Install Calico network plugin
-  command: wget https://docs.projectcalico.org/manifests/calico.yaml && kubectl -f calico.yaml
+  shell: |
+    kubectl apply -f https://docs.projectcalico.org/manifests/calico.yaml
