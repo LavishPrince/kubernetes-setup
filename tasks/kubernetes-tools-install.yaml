@@ -33,10 +33,8 @@
     state: present
 
 - name: Add Kubernetes repository
-  apt_repository:
-    repo: deb http://apt.kubernetes.io/kubernetes-xenial main
-    state: present
-    filename: kubernetes
+  shell: |
+    apt-add-repository "deb http://apt.kubernetes.io/kubernetes-xenial main"
 
 - name: Install Kubernetes components
   apt:
