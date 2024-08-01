@@ -50,12 +50,8 @@
     state: present
 
 - name: Hold Kubernetes packages at their current version
-  ansible.builtin.dpkg_selections:
-    name:
-      - kubelet
-      - kubeadm
-      - kubectl
-    selection: hold
+  shell: |
+    apt-mark hold kubelet kubeadm kubectl
 
 - name: Enable and start Docker
   systemd:
