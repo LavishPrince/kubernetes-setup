@@ -1,8 +1,35 @@
+- name: Add a new user
+  user:
+    name: "kubeuser"
+    comment: "kubeuser"
+    group: "users"
+    shell: "/bin/bash"
+    password: "{{ 'password' | password_hash('sha512') }}"
+    state: present
+
+- name: Create a home directory for the new user
+  file:
+    path: "/home/newusername"
+    state: directory
+    owner: "kubeuser"
+    group: "users"
+    mode: "0755"
+
+- name: Add the user to the sudo group
+  user:
+    name: "kubeuser"
+    groups: "sudo"
+    append: yes
+
 - name: Ensure apt cache is up to date
+  become_user: kubeuser
+  become: true
   apt:
     update_cache: yes
 
 - name: Install necessary dependencies
+  become_user: kubeuser
+  become: true
   apt:
     name:
       - apt-transport-https
@@ -13,35 +40,49 @@
     state: present
 
 - name: Add Docker GPG key
+  become_user: kubeuser
+  become: true
   apt_key:
     url: https://download.docker.com/linux/ubuntu/gpg
     state: present
 
 - name: Add Docker repository
+  become_user: kubeuser
+  become: true
   apt_repository:
     repo: deb [arch=amd64] https://download.docker.com/linux/ubuntu focal stable
     state: present
     filename: docker
 
 - name: Install Docker
+  become_user: kubeuser
+  become: true
   apt:
     name: docker-ce
     state: present
 
 - name: Add Kubernetes apt-key
+  become_user: kubeuser
+  become: true
   shell: |
     sudo mkdir -p -m 755 /etc/apt/keyrings
     curl -fsSL https://pkgs.k8s.io/core:/stable:/v1.29/deb/Release.key | sudo gpg --dearmor -o /etc/apt/keyrings/kubernetes-apt-keyring.gpg
 
 - name: Add Kubernetes repository
+  become_user: kubeuser
+  become: true
   shell: |
     echo 'deb [signed-by=/etc/apt/keyrings/kubernetes-apt-keyring.gpg] https://pkgs.k8s.io/core:/stable:/v1.29/deb/ /' | sudo tee /etc/apt/sources.list.d/kubernetes.list
 
 - name: Ensure apt cache is up to date
+  become_user: kubeuser
+  become: true
   apt:
     update_cache: yes
 
 - name: Install Kubernetes components
+  become_user: kubeuser
+  become: true
   apt:
     name:
       - kubelet
@@ -50,16 +91,22 @@
     state: present
 
 - name: Hold Kubernetes packages at their current version
+  become_user: kubeuser
+  become: true
   shell: |
     apt-mark hold kubelet kubeadm kubectl
 
 - name: Enable and start Docker
+  become_user: kubeuser
+  become: true
   systemd:
     name: docker
     enabled: yes
     state: started
 
 - name: Enable and start kubelet
+  become_user: kubeuser
+  become: true
   systemd:
     name: kubelet
     enabled: yes
@@ -70,17 +117,23 @@
 #   become: yes
 # tasks:
 - name: Restart Container.d service
+  become_user: kubeuser
+  become: true
   shell: |
     rm -f /etc/containerd/config.toml
     systemctl restart containerd
 
 - name: Initialize Kubernetes cluster
+  become_user: kubeuser
+  become: true
   command: kubeadm init --pod-network-cidr=10.0.0.0/16
   become: yes
   register: kubeadm_init
   ignore_errors: yes
 
 - name: Set up kubeconfig for the root user
+  become_user: kubeuser
+  become: true
   command: "{{ item }}"
   become: yes
   with_items:
@@ -89,5 +142,7 @@
     - chown $(id -u):$(id -g) $HOME/.kube/config
 
 - name: Install Calico network plugin
+  become_user: kubeuser
+  become: true
   command: kubectl apply -f https://docs.projectcalico.org/manifests/calico.yaml
   become: yes
