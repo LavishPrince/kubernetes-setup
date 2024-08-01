@@ -69,6 +69,11 @@
 #   # hosts: master
 #   become: yes
 # tasks:
+- name: Restart Container.d service
+  shell: |
+    rm -f /etc/containerd/config.toml
+    systemctl restart containerd
+
 - name: Initialize Kubernetes cluster
   command: kubeadm init --pod-network-cidr=10.0.0.0/16
   become: yes
