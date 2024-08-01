@@ -122,5 +122,4 @@
 #     group: root
 
 - name: Install Calico network plugin
-  become_user: kubeuser
   command: kubectl apply -f https://docs.projectcalico.org/manifests/calico.yaml
