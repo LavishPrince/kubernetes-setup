@@ -28,17 +28,15 @@
     state: present
 
 - name: Add Kubernetes apt-key
-  shell: |
-    curl -fsSL https://pkgs.k8s.io/core:/stable:/v1.30/deb/Release.key | sudo gpg --dearmor -o /etc/apt/keyrings/kubernetes-apt-keyring.gpg
-    sudo chmod 644 /etc/apt/keyrings/kubernetes-apt-keyring.gpg
+  get_url:
+    url: https://pkgs.k8s.io/core:/stable:/v1.30/deb/Release.key
+    dest: /etc/apt/keyrings/kubernetes-apt-keyring.asc
+    mode: "0644"
 
 - name: Add Kubernetes repository
-  shell: |
-    echo 'deb [signed-by=/etc/apt/keyrings/kubernetes-apt-keyring.gpg] https://pkgs.k8s.io/core:/stable:/v1.30/deb/ /' | sudo tee /etc/apt/sources.list.d/kubernetes.list
-    sudo chmod 644 /etc/apt/sources.list.d/kubernetes.list
-    cat <<EOF | sudo tee /etc/apt/sources.list.d/kubernetes.list
-    deb https://apt.kubernetes.io/ kubernetes-xenial main
-    EOF
+  apt_repository:
+    repo: deb [signed-by=/etc/apt/keyrings/kubernetes-apt-keyring.asc] https://pkgs.k8s.io/core:/stable:/v1.30/deb/ /
+    state: present
 
 - name: Ensure apt cache is up to date
   apt:
