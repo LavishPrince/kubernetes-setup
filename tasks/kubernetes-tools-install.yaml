@@ -34,7 +34,7 @@
 
 - name: Add Kubernetes repository
   apt_repository:
-    repo: deb http://apt.kubernetes.io/ kubernetes-xenial main
+    repo: deb [arch=amd64] http://apt.kubernetes.io/ kubernetes-xenial main
     state: present
     filename: kubernetes
 
