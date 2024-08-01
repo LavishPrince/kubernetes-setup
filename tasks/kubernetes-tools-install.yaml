@@ -68,7 +68,7 @@
     state: started
 
 - name: Initialize Kubernetes master node
-  hosts: master
+  # hosts: master
   become: yes
   tasks:
     - name: Initialize Kubernetes cluster
