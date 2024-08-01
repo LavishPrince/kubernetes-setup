@@ -10,4 +10,4 @@
         - k8
 
   tasks:
-    # - include_tasks: ./tasks/basic-tools.yaml
+    - include_tasks: ./tasks/kubernetes-tools-install.yaml
