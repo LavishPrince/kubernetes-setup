@@ -1,33 +1,33 @@
-- name: Add a new user
-  user:
-    name: "kubeuser"
-    comment: "kubeuser"
-    group: "users"
-    shell: "/bin/bash"
-    password: "{{ 'password' | password_hash('sha512') }}"
-    state: present
-
-- name: Create a home directory for the new user
-  file:
-    path: "/home/newusername"
-    state: directory
-    owner: "kubeuser"
-    group: "users"
-    mode: "0755"
-
-- name: Add the user to the sudo group
-  user:
-    name: "kubeuser"
-    groups: "sudo"
-    append: yes
-
-- name: Allow passwordless sudo for the new user (optional)
-  lineinfile:
-    path: /etc/sudoers
-    state: present
-    regexp: "^%kubeuser ALL="
-    line: "kubeuser ALL=(ALL) NOPASSWD:ALL"
-    validate: "visudo -cf %s"
+# - name: Add a new user
+#   user:
+#     name: "kubeuser"
+#     comment: "kubeuser"
+#     group: "users"
+#     shell: "/bin/bash"
+#     password: "{{ 'password' | password_hash('sha512') }}"
+#     state: present
+#
+# - name: Create a home directory for the new user
+#   file:
+#     path: "/home/newusername"
+#     state: directory
+#     owner: "kubeuser"
+#     group: "users"
+#     mode: "0755"
+#
+# - name: Add the user to the sudo group
+#   user:
+#     name: "kubeuser"
+#     groups: "sudo"
+#     append: yes
+#
+# - name: Allow passwordless sudo for the new user (optional)
+#   lineinfile:
+#     path: /etc/sudoers
+#     state: present
+#     regexp: "^%kubeuser ALL="
+#     line: "kubeuser ALL=(ALL) NOPASSWD:ALL"
+#     validate: "visudo -cf %s"
 
 - name: Ensure apt cache is up to date
   apt:
@@ -107,14 +107,11 @@
 
 - name: Initialize Kubernetes cluster
   command: kubeadm init --pod-network-cidr=10.0.0.0/16
-  become: true
   register: kubeadm_init
   ignore_errors: yes
 
 - name: Set up kubeconfig for the root user
-  become_user: kubeuser
   command: "{{ item }}"
-  become: true
   with_items:
     - sudo mkdir -p $HOME/.kube
     - sudo cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
@@ -127,5 +124,4 @@
 
 - name: Install Calico network plugin
   become_user: kubeuser
-  become: true
   command: kubectl apply -f https://docs.projectcalico.org/manifests/calico.yaml
