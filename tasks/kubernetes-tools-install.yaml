@@ -67,21 +67,24 @@
     enabled: yes
     state: started
 
-- name: Initialize Kubernetes master node
-  # hosts: master
+# - name: Initialize Kubernetes master node
+#   # hosts: master
+#   become: yes
+# tasks:
+- name: Initialize Kubernetes cluster
+  command: kubeadm init --pod-network-cidr=10.0.0.0/16
   become: yes
-  tasks:
-    - name: Initialize Kubernetes cluster
-      command: kubeadm init --pod-network-cidr=10.0.0.0/16
-      register: kubeadm_init
-      ignore_errors: yes
+  register: kubeadm_init
+  ignore_errors: yes
 
-    - name: Set up kubeconfig for the root user
-      command: "{{ item }}"
-      with_items:
-        - mkdir -p $HOME/.kube
-        - cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
-        - chown $(id -u):$(id -g) $HOME/.kube/config
+- name: Set up kubeconfig for the root user
+  command: "{{ item }}"
+  become: yes
+  with_items:
+    - mkdir -p $HOME/.kube
+    - cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
+    - chown $(id -u):$(id -g) $HOME/.kube/config
 
-    - name: Install Calico network plugin
-      command: kubectl apply -f https://docs.projectcalico.org/manifests/calico.yaml
+- name: Install Calico network plugin
+  command: kubectl apply -f https://docs.projectcalico.org/manifests/calico.yaml
+  become: yes
