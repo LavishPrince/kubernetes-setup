@@ -113,13 +113,12 @@
 
 - name: Set up kubeconfig for the root user
   become_user: kubeuser
-  become: true
   command: "{{ item }}"
   become: yes
   with_items:
     - sudo mkdir -p $HOME/.kube
     - sudo cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
-    - sudo chown $(id -u):$(id -g) -- $HOME/.kube/config
+    - sudo chown $(id -u):$(id -g) $HOME/.kube/config
 # - name: Update kube folder permission
 #   folder:
 #     path: $HOME/.kube
