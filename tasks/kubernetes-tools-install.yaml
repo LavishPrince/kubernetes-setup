@@ -120,6 +120,11 @@
     - sudo mkdir -p $HOME/.kube
     - sudo cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
     - sudo chown $(id -u):$(id -g) -- $HOME/.kube/config
+# - name: Update kube folder permission
+#   folder:
+#     path: $HOME/.kube
+#     owner: kubeuser
+#     group: root
 
 - name: Install Calico network plugin
   become_user: kubeuser
