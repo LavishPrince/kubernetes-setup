@@ -107,14 +107,14 @@
 
 - name: Initialize Kubernetes cluster
   command: kubeadm init --pod-network-cidr=10.0.0.0/16
-  become: yes
+  become: true
   register: kubeadm_init
   ignore_errors: yes
 
 - name: Set up kubeconfig for the root user
   become_user: kubeuser
   command: "{{ item }}"
-  become: yes
+  become: false
   with_items:
     - sudo mkdir -p $HOME/.kube
     - sudo cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
