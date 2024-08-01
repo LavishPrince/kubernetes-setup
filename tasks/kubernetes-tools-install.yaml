@@ -1,34 +1,3 @@
-# - name: Add a new user
-#   user:
-#     name: "kubeuser"
-#     comment: "kubeuser"
-#     group: "users"
-#     shell: "/bin/bash"
-#     password: "{{ 'password' | password_hash('sha512') }}"
-#     state: present
-#
-# - name: Create a home directory for the new user
-#   file:
-#     path: "/home/newusername"
-#     state: directory
-#     owner: "kubeuser"
-#     group: "users"
-#     mode: "0755"
-#
-# - name: Add the user to the sudo group
-#   user:
-#     name: "kubeuser"
-#     groups: "sudo"
-#     append: yes
-#
-# - name: Allow passwordless sudo for the new user (optional)
-#   lineinfile:
-#     path: /etc/sudoers
-#     state: present
-#     regexp: "^%kubeuser ALL="
-#     line: "kubeuser ALL=(ALL) NOPASSWD:ALL"
-#     validate: "visudo -cf %s"
-
 - name: Ensure apt cache is up to date
   apt:
     update_cache: yes
@@ -97,10 +66,6 @@
     enabled: yes
     state: started
 
-# - name: Initialize Kubernetes master node
-#   # hosts: master
-#   become: yes
-# tasks:
 - name: Restart Container.d service
   shell: |
     rm -f /etc/containerd/config.toml
@@ -116,14 +81,8 @@
   with_items:
     - sudo mkdir -p $HOME/.kube
     - sudo cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
-# - name: Update kube folder permission
-#   folder:
-#     path: $HOME/.kube
-#     owner: kubeuser
-#     group: root
-- name: Connection refused Problem solution
-  command: sudo -i && swapoff -a && exit && strace -eopenat kubectl version
+- name: connection refused problem solution
+  command: swapoff -a
 
-- name: Install Calico network plugin
-  shell: |
-    kubectl apply -f https://docs.projectcalico.org/manifests/calico.yaml --validate=false
+- name: connection refused problem solution
+  command: strace -eopenat kubectl version
