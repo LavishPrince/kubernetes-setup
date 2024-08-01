@@ -1,6 +1,6 @@
 ---
 - name: Setup Kubernetes in Virtual Machine
-  hosts: localhost
+  hosts: all
   become: true
   pre_tasks:
     - name: Update Cache

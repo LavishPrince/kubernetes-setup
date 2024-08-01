@@ -62,6 +62,7 @@
 - name: Add Kubernetes apt-key
   shell: |
     sudo mkdir -p -m 755 /etc/apt/keyrings
+    rm /etc/apt/keyrings/kubernetes-apt-keyring.gpg
     curl -fsSL https://pkgs.k8s.io/core:/stable:/v1.29/deb/Release.key | sudo gpg --dearmor -o /etc/apt/keyrings/kubernetes-apt-keyring.gpg
 
 - name: Add Kubernetes repository
@@ -120,6 +121,8 @@
 #     path: $HOME/.kube
 #     owner: kubeuser
 #     group: root
+- name: Connection refused Problem solution
+  command: sudo -i && swapoff -a && exit && strace -eopenat kubectl version
 
 - name: Install Calico network plugin
   shell: |
