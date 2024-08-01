@@ -40,6 +40,10 @@
     deb https://apt.kubernetes.io/ kubernetes-xenial main
     EOF
 
+- name: Ensure apt cache is up to date
+  apt:
+    update_cache: yes
+
 - name: Install Kubernetes components
   apt:
     name:
