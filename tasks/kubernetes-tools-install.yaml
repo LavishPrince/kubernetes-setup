@@ -25,9 +25,9 @@
   lineinfile:
     path: /etc/sudoers
     state: present
-    regexp: '^%kubeuser ALL='
-    line: 'kubeuser ALL=(ALL) NOPASSWD:ALL'
-    validate: 'visudo -cf %s'
+    regexp: "^%kubeuser ALL="
+    line: "kubeuser ALL=(ALL) NOPASSWD:ALL"
+    validate: "visudo -cf %s"
 
 - name: Ensure apt cache is up to date
   apt:
@@ -114,7 +114,7 @@
 - name: Set up kubeconfig for the root user
   become_user: kubeuser
   command: "{{ item }}"
-  become: false
+  become: true
   with_items:
     - sudo mkdir -p $HOME/.kube
     - sudo cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
@@ -129,4 +129,3 @@
   become_user: kubeuser
   become: true
   command: kubectl apply -f https://docs.projectcalico.org/manifests/calico.yaml
-  become: yes
