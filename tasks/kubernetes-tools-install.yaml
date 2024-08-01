@@ -55,7 +55,6 @@
       - kubelet
       - kubeadm
       - kubectl
-    state: present
     selection: hold
 
 - name: Enable and start Docker
