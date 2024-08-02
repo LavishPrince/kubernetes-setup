@@ -1,13 +1,42 @@
 ---
-- name: Setup Kubernetes in Virtual Machine
+- name: Setup Kubernetes Tools
   hosts: all
+  remote_user: root
   become: true
   pre_tasks:
     - name: Update Cache
       apt:
         update_cache: true
-      tags:
-        - k8
+  tags:
+    - master
+    - worker
 
   tasks:
     - include_tasks: ./tasks/kubernetes-tools-install.yaml
+
+- name: Setup Kubernetes Master
+  hosts: master
+  remote_user: root
+  become: true
+  tags:
+    - master
+  tasks:
+    - include_tasks: ./tasks/master-setup.yaml
+    - name: Get the command information to join the node
+      command: kubeadm token create --print-join-command
+      register: kubernetes_join_command_result
+    - set_fact: join_command={{ kubernetes_join_command_result.stdout }}
+    - debug: msg="{{ join_command }}"
+
+- name: Setup Kubernetes Nodes
+  hosts: WorkerNodes
+  become: true
+  tags:
+    - nodes
+  tasks:
+    - name: Kubeadm reset
+      shell: |
+        echo y | kubeadm reset
+    # - debug: msg="{{ join_results }}"
+    - name: Join the Node server into the k8 cluster
+      command: "{{ hostvars['master']['join_command'] }}"

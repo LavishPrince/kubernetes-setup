@@ -1,0 +1,1 @@
+strace -eopenat kubectl version

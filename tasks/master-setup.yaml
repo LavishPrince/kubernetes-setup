@@ -1,0 +1,17 @@
+- name: Initialize Kubernetes cluster
+  shell: |
+    sudo swapoff -a
+    sudo sed -i '/ swap / s/^/#/' /etc/fstab
+    rm ~/.kube -rf
+    echo y | kubeadm reset
+    apiserverip="$(hostname -I | awk '{print $3}')"
+    kubeadm init --apiserver-advertise-address=$apiserverip --pod-network-cidr=192.168.0.0/16 > /tmp/mastersetup.txt
+    grep -qxF 'export KUBECONFIG=/etc/kubernetes/admin.conf' ~/.bashrc || echo 'export KUBECONFIG=/etc/kubernetes/admin.conf' >> ~/.bashrc
+  ignore_errors: yes
+# - name: Setup Calico
+#   remote_user: root
+#   shell:
+#     cmd: |
+#       export KUBECONFIG=/etc/kubernetes/admin.conf
+#       curl https://raw.githubusercontent.com/projectcalico/calico/v3.28.1/manifests/calico.yaml -O
+#       kubectl  apply -f calico.yaml
